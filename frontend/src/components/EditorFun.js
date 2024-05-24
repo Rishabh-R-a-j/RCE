@@ -1,24 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import Editor from "@monaco-editor/react";
 
-
-function EditorFun(props) {
-  const [curcode, setcurcode] = useState(props.code);
+function EditorFun({socketRef,roomId,code,theme,changeCode}) {
+  
+  const [curcode, setcurcode] = useState(code);
   useEffect(()=>{
-    setcurcode(props.code);
-  },[props.code])
+    setcurcode(code);
+    
+  },[code])
+
   function handleChange(value) {
     setcurcode(value);
-    props.changeCode(value);
-   // console.log(value)
-  //   props.socket.emit("sendCode", value);
+    changeCode(value);
     console.log("typing...");
-  // }
-
-  // props.socket.on("recivecode", (mssg) => {
-  //   setcurcode(mssg);
+    socketRef.current.emit('code_change',{
+      roomId,code:curcode
+    })
   };
-  console.log(curcode)
+ 
+  useEffect(() => {
+    if (socketRef.current) {
+        socketRef.current.on('code_change', ({ code }) => {
+            if (code !== null) {
+                setcurcode(code);
+            }
+        });
+    }
+
+    return () => {
+        socketRef.current.off('code_change');
+    };
+}, [socketRef.current]);
+
 
   return (
     <div id="main">
@@ -27,7 +40,7 @@ function EditorFun(props) {
         width="100%"
         defaultLanguage="c"
         value={curcode}
-        theme={props.theme}
+        theme={theme}
         onChange={handleChange}
       />
     </div>

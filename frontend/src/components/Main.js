@@ -14,7 +14,7 @@ import "./Main.css";
 
 // const socket = io.connect("http://localhost:4000");
 
-function Main() {
+function Main({socketRef,roomId}) {
   let value="Hello";
   const [language, setLanguage] = useState("C++");
   const [codeidx, setCodeidx] = useState(1);
@@ -127,8 +127,9 @@ function Main() {
         <div className="left">
           <EditorFun
             theme={theme}
-            // codeidx={codeidx}
             code={code}
+            socketRef={socketRef}
+            roomId={roomId}
             // socket={socket}
             changeCode={setCode}
           />
