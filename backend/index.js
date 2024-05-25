@@ -43,16 +43,20 @@ io.on('connection',socket=>{
         });
     })
 
-    socket.on('code_change',({roomId,code,language})=>{
-        socket.to(roomId).emit('code_change',{code,language});
+    socket.on('code_change',({roomId,code})=>{
+        socket.to(roomId).emit('code_change',{code});
     })
     socket.on('language_change',({roomId,language})=>{
-        console.log(language);
+        console.log(language,"lsang_change");
         socket.to(roomId).emit('language_change',{language})
     })
     socket.on('sync_code', ({ socketId, code,language }) => {
         console.log(code,language)
-        socket.to(socketId).emit('code_change', { code,language });
+        socket.to(socketId).emit('code_change', {code,language });
+    });
+    socket.on('sync_lang', ({ socketId, language }) => {
+        console.log(language,'sync_lang')
+        socket.to(socketId).emit('language_change', {language});
     });
 
     socket.on('disconnecting',() => {

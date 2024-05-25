@@ -11,16 +11,18 @@ import Output from "./Output";
 import EditorFun from "./EditorFun";
 // import io from "socket.io-client";
 import "./Main.css";
+import { returnIdx } from "../utils/defaultCode";
 
 // const socket = io.connect("http://localhost:4000");
 
-function Main({socketRef,roomId,socketid,onChangeCode}) {
+function Main({socketRef,roomId,socketid,onChangeCode,onChangeLang}) {
   const [language, setLanguage] = useState("c++");
   const [codeidx, setCodeidx] = useState(1);
   const [theme, setTheme] = useState("vs-light");
   const [code, setCode] = useState(returncode(1));
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+
   function changeLanguage(e) {
     //console.log(e.target.value)
     if (e.target.value === "c++") {
@@ -46,30 +48,53 @@ function Main({socketRef,roomId,socketid,onChangeCode}) {
      // console.log(code);
     }
    // console.log("codeidx",codeidx)
-  
+   onChangeLang(e.target.value);
+   socketRef.current.emit('language_change',{roomId,language:e.target.value});
   }
  
-if (socketRef.current) {
-  socketRef.current.on('code_change', ({ code,language }) => {
-    if (code !== null) {
-        setCode(code);
-    }
+// if (socketRef.current) {
+//   socketRef.current.on('code_change', ({ code,language }) => {
+//     if (code !== null) {
+//         setCode(code);
+//     }
+//     if(language!==null){
+//       setLanguage(language)
+//       onChangeLang(language)
+//     }});
+//     socketRef.current.on('language_change', ({language }) => {
+//       console.log(language)
+//     if(language){
+//       setLanguage(language)
+//       document.getElementById('dropdown-item-button').value =language
+//       onChangeLang(language)
+//     } 
+//     });
+// }
+
+useEffect(()=>{
+  if (socketRef.current) {
+    socketRef.current.on('language_change',({language})=>{
+      console.log(language)
     if(language){
       setLanguage(language)
-    }});
-    socketRef.current.on('language_change', ({language }) => {
-    if(language){
       document.getElementById('dropdown-item-button').value =language
     } 
     });
-}
+    return () => {
+      socketRef .current.off('language_change');
+  };
+  }
+},[socketRef.current])
+
+
 
 
 useEffect(()=>{
   if (socketRef.current) {
+    onChangeLang(language)
     socketRef.current.emit('language_change',{roomId,language});
   }
-},[language,socketRef.current])
+},[language])
 
 
 

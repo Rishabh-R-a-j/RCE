@@ -13,6 +13,7 @@ function EditorFun({socketRef,roomId,code,theme,changeCode,socketid,language,onC
       });
     }
   },[code])
+  
   function handleChange(value) {
     setcurcode(value);
     changeCode(value);

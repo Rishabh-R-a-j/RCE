@@ -24,3 +24,10 @@ const def_code = {
       return def_code.Java;
     }
   }
+
+  export const returnIdx=(x)=>{
+    if(x=="c++") return 1
+    else if(x=="python") return 2
+    else if(x=="javascript") return 3
+    else return 4;
+  }

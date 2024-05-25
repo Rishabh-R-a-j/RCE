@@ -19,6 +19,7 @@ const EditorPage = () => {
     const reactNavigator = useNavigate();
     const [clients, setClients] = useState([]);
     const codeRef=useRef(null);
+    const languageRef=useRef(null);
 
     useEffect(() => {
         const init = async () => {
@@ -47,7 +48,9 @@ const EditorPage = () => {
                         console.log(`${username} joined`);
                     }
                     setClients(clients);
-                    socketRef.current.emit('sync_code',{socketId,code:codeRef.current})
+                    socketRef.current.emit('sync_code',{socketId,code:codeRef.current,language:languageRef.current})
+                    socketRef.current.emit('sync_lang',{socketId,
+                        language:languageRef.current})
                 }
             );
 
@@ -71,6 +74,7 @@ const EditorPage = () => {
         //     socketRef.current.off('disconnected');
         // };
     }, []);
+
 
     if (!location.state) {
         return <Navigate to="/" />;
@@ -130,6 +134,9 @@ const EditorPage = () => {
                     roomId={roomId}
                     onChangeCode={(code)=>{
                         codeRef.current=code;
+                    }}
+                    onChangeLang={(lang)=>{
+                        languageRef.current=lang;
                     }}
                 />
             </div>
