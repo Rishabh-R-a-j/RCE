@@ -52,7 +52,7 @@ io.on('connection',socket=>{
     })
     socket.on('sync_code', ({ socketId, code,language }) => {
         console.log(code,language)
-        socket.to(socketId).emit('sync_code', { code,language });
+        socket.to(socketId).emit('code_change', { code,language });
     });
 
     socket.on('disconnecting',() => {

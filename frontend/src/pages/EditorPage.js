@@ -18,7 +18,7 @@ const EditorPage = () => {
     const { roomId } = useParams();
     const reactNavigator = useNavigate();
     const [clients, setClients] = useState([]);
-    
+    const codeRef=useRef(null);
 
     useEffect(() => {
         const init = async () => {
@@ -47,6 +47,7 @@ const EditorPage = () => {
                         console.log(`${username} joined`);
                     }
                     setClients(clients);
+                    socketRef.current.emit('sync_code',{socketId,code:codeRef.current})
                 }
             );
 
@@ -127,6 +128,9 @@ const EditorPage = () => {
                 <Main 
                     socketRef={socketRef}
                     roomId={roomId}
+                    onChangeCode={(code)=>{
+                        codeRef.current=code;
+                    }}
                 />
             </div>
         </div>

@@ -14,7 +14,7 @@ import "./Main.css";
 
 // const socket = io.connect("http://localhost:4000");
 
-function Main({socketRef,roomId,socketid}) {
+function Main({socketRef,roomId,socketid,onChangeCode}) {
   const [language, setLanguage] = useState("c++");
   const [codeidx, setCodeidx] = useState(1);
   const [theme, setTheme] = useState("vs-light");
@@ -154,6 +154,7 @@ useEffect(()=>{
             socketId={socketid}
             roomId={roomId}
             language={language}
+            onChangeCode={onChangeCode}
             // socket={socket}
             changeCode={setCode}
           />
