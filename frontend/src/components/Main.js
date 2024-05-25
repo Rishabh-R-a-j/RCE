@@ -14,43 +14,65 @@ import "./Main.css";
 
 // const socket = io.connect("http://localhost:4000");
 
-function Main({socketRef,roomId}) {
-  let value="Hello";
-  const [language, setLanguage] = useState("C++");
+function Main({socketRef,roomId,socketid}) {
+  const [language, setLanguage] = useState("c++");
   const [codeidx, setCodeidx] = useState(1);
   const [theme, setTheme] = useState("vs-light");
   const [code, setCode] = useState(returncode(1));
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-
   function changeLanguage(e) {
-    console.log(e.target.value)
+    //console.log(e.target.value)
     if (e.target.value === "c++") {
-      setLanguage("C++");
+      setLanguage("c++");
       setCodeidx(1);
       let codeval=returncode(1);
-      console.log(codeval);
+      //console.log(codeval);
       setCode(codeval);
-      console.log(code);
+      //console.log(code);
     } else if (e.target.value === "python") {
-      setLanguage("Python");
+      setLanguage("python");
       setCodeidx(2);
       let codeval=returncode(2);
-      console.log(codeval);
+     // console.log(codeval);
       setCode(codeval);
-      console.log(code);
-    } else if(e.target.value === "js") {
-      setLanguage("Javascript");
+      //console.log(code);
+    } else if(e.target.value === "javascript") {
+      setLanguage("javascript");
       setCodeidx(3);
       let codeval=returncode(3);
-      console.log(codeval);
+     // console.log(codeval);
       setCode(codeval);
-      console.log(code);
+     // console.log(code);
     }
    // console.log("codeidx",codeidx)
   
   }
-  
+ 
+if (socketRef.current) {
+  socketRef.current.on('code_change', ({ code,language }) => {
+    if (code !== null) {
+        setCode(code);
+    }
+    if(language){
+      setLanguage(language)
+    }});
+    socketRef.current.on('language_change', ({language }) => {
+    if(language){
+      document.getElementById('dropdown-item-button').value =language
+    } 
+    });
+}
+
+
+useEffect(()=>{
+  if (socketRef.current) {
+    socketRef.current.emit('language_change',{roomId,language});
+  }
+},[language,socketRef.current])
+
+
+
   function changeTheme(e) {
     if (theme === "vs-light") {
       setTheme("vs-dark");
@@ -115,10 +137,10 @@ function Main({socketRef,roomId}) {
         >
           Run code
         </Button>
-        <select name="language" id="dropdown-item-button" onChange={(e)=>{changeLanguage(e)}} className={theme==='vs-light' ? "bg-white text-black" : "bg-black text-white"}>
+        <select name="language"  id="dropdown-item-button" defaultValue={language} onChange={(e)=>{changeLanguage(e)}} className={theme==='vs-light' ? "bg-white text-black" : "bg-black text-white"}>
             <option value= "c++" >c++</option>
             <option value= "python">Python</option>
-            <option value= "js">Javascript</option>
+            <option value= "javascript">Javascript</option>
         </select>
       </Navbar>
       <ToastContainer />
@@ -129,7 +151,9 @@ function Main({socketRef,roomId}) {
             theme={theme}
             code={code}
             socketRef={socketRef}
+            socketId={socketid}
             roomId={roomId}
+            language={language}
             // socket={socket}
             changeCode={setCode}
           />
@@ -138,7 +162,7 @@ function Main({socketRef,roomId}) {
           <Input 
                 changeInput={setInput} 
                 theme={theme}
-                // socket={socket} 
+                 socketid={socketid} 
                 input={input} />
           <Output output={output} theme={theme}  />
         </div>

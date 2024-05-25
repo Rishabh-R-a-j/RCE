@@ -1,14 +1,17 @@
 import React, { useState, useEffect,useRef } from "react";
 import Editor from "@monaco-editor/react";
 
-function EditorFun({socketRef,roomId,code,theme,changeCode}) {
+function EditorFun({socketRef,roomId,code,theme,changeCode,socketid,language}) {
   
   const [curcode, setcurcode] = useState(code);
   useEffect(()=>{
     setcurcode(code);
-    
+    if (socketRef.current) {
+      socketRef.current.emit('code_change',{
+        roomId,code,language
+      });
+    }
   },[code])
-
   function handleChange(value) {
     setcurcode(value);
     changeCode(value);
@@ -16,8 +19,10 @@ function EditorFun({socketRef,roomId,code,theme,changeCode}) {
     socketRef.current.emit('code_change',{
       roomId,code:curcode
     })
+    // socketRef.current.emit('sync_code',{
+    //   socketId,code,language
+    // });
   };
- 
   useEffect(() => {
     if (socketRef.current) {
         socketRef.current.on('code_change', ({ code }) => {
@@ -28,7 +33,7 @@ function EditorFun({socketRef,roomId,code,theme,changeCode}) {
     }
 
     return () => {
-        socketRef.current.off('code_change');
+        socketRef .current.off('code_change');
     };
 }, [socketRef.current]);
 

@@ -1,7 +1,7 @@
 const express=require('express');
 const cors=require('cors');
 const port=process.env.PORT || 8080;
-
+//import { returncode } from "../utils/defaultCode";
 const app=express();
 app.use(cors());
 
@@ -43,10 +43,13 @@ io.on('connection',socket=>{
         });
     })
 
-    socket.on('code_change',({roomId,code})=>{
-        socket.to(roomId).emit('code_change',{code});
+    socket.on('code_change',({roomId,code,language})=>{
+        socket.to(roomId).emit('code_change',{code,language});
     })
-
+    socket.on('language_change',({roomId,language})=>{
+        console.log(language);
+        socket.to(roomId).emit('language_change',{language})
+    })
     socket.on('sync_code', ({ socketId, code,language }) => {
         console.log(code,language)
         socket.to(socketId).emit('sync_code', { code,language });
