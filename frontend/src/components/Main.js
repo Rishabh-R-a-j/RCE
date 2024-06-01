@@ -3,7 +3,7 @@ import { DropdownButton, Dropdown, Navbar, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import Axios from "axios";
 import { returncode } from "../utils/defaultCode";
 //import Editor from "./EditorFun";
 import Input from "./Input";
@@ -12,21 +12,22 @@ import EditorFun from "./EditorFun";
 // import io from "socket.io-client";
 import "./Main.css";
 import { returnIdx } from "../utils/defaultCode";
+import spinner from './spinner.svg';
 
 // const socket = io.connect("http://localhost:4000");
 
 function Main({socketRef,roomId,socketid,onChangeCode,onChangeLang}) {
-  const [language, setLanguage] = useState("c++");
+  const [language, setLanguage] = useState("cpp");
   const [codeidx, setCodeidx] = useState(1);
   const [theme, setTheme] = useState("vs-light");
   const [code, setCode] = useState(returncode(1));
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-
+  const [loading, setLoading] = useState(false);
   function changeLanguage(e) {
     //console.log(e.target.value)
-    if (e.target.value === "c++") {
-      setLanguage("c++");
+    if (e.target.value === "cpp") {
+      setLanguage("cpp");
       setCodeidx(1);
       let codeval=returncode(1);
       //console.log(codeval);
@@ -51,6 +52,27 @@ function Main({socketRef,roomId,socketid,onChangeCode,onChangeLang}) {
    onChangeLang(e.target.value);
    socketRef.current.emit('language_change',{roomId,language:e.target.value});
   }
+  async function  compile() {
+    setLoading(true);
+    if (code === ``) {
+        return
+    }
+
+    // Post request to compile endpoint
+   await Axios.post(`http://localhost:8080/compile`, {
+        code: code,
+        language : language,
+        input : input
+    }).then((res) => {
+        setOutput(res.data.output);
+        console.log("Hello");
+    }).then(() => {
+        setLoading(false);
+    })
+}
+function clearOutput() {
+  setOutput("");
+}
  
 // if (socketRef.current) {
 //   socketRef.current.on('code_change', ({ code,language }) => {
@@ -140,7 +162,9 @@ useEffect(()=>{
 //     setOutput(data);
 //     console.log(data);
 //   }
-
+function handleChange(e){
+setInput(e.target.value);
+}
   return (
     <>
       {/* /* Navbar code*/}
@@ -157,13 +181,13 @@ useEffect(()=>{
         <Button
           variant="light"
           size="sm"
-        //   onClick={sendCodetoServer}
+         onClick={()=>compile()}
           className="main-button"
         >
           Run code
         </Button>
         <select name="language"  id="dropdown-item-button" defaultValue={language} onChange={(e)=>{changeLanguage(e)}} className={theme==='vs-light' ? "bg-white text-black" : "bg-black text-white"}>
-            <option value= "c++" >c++</option>
+            <option value= "cpp" >c++</option>
             <option value= "python">Python</option>
             <option value= "javascript">Javascript</option>
         </select>
@@ -185,12 +209,23 @@ useEffect(()=>{
           />
         </div>
         <div className="right">
-          <Input 
-                changeInput={setInput} 
-                theme={theme}
-                 socketid={socketid} 
-                input={input} />
-          <Output output={output} theme={theme}  />
+        <Input
+        theme={theme}
+        value={input}
+        handleChange={handleChange}
+      />
+         {loading ? (
+                        <div className="spinner-box">
+                            <img src={spinner} alt="Loading..." />
+                        </div>
+                    ) : (
+                      <Output output={output} theme={theme}  />
+                    )}
+                    <button onClick={() => { clearOutput() }}
+                                className="clear-btn">
+                                Clear
+                            </button>  
+          
         </div>
       </div>
     </>
