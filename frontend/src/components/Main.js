@@ -64,12 +64,13 @@ function Main({socketRef,roomId,socketid,onChangeCode,onChangeLang}) {
         language : language,
         input : input
     }).then((res) => {
-        setOutput(res.data.output);
-        console.log("Hello");
+        setOutput(res.data.result);
+        // console.log(res.data.result);
     }).then(() => {
         setLoading(false);
     })
 }
+console.log(output);
 function clearOutput() {
   setOutput("");
 }
@@ -215,8 +216,8 @@ setInput(e.target.value);
         handleChange={handleChange}
       />
          {loading ? (
-                        <div className="spinner-box">
-                            <img src={spinner} alt="Loading..." />
+                        <div className="h-[400px] w-full bg-white flex items-center  justify-center">
+                            <img src={spinner} alt="Loading..." className="h-[70px]"/>
                         </div>
                     ) : (
                       <Output output={output} theme={theme}  />

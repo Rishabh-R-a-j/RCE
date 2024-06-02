@@ -17,6 +17,8 @@ html {
 }
 .spinner-box img {
   width: 150px;
+  height: 100%;
+  
 }
 .clear-btn {
   position: absolute;
@@ -39,7 +41,7 @@ body {
   margin: 0;
 }
 .spinner-box {
-  flex: 50%;
+  /* flex: 50%; */
   background-color: white;
   overflow-y: auto;
   display: flex;
